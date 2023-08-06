@@ -1,3 +1,5 @@
+import sample.SamplePlayer;
+
 class Game extends AppChildProcess {
 	public static var ME : Game;
 
@@ -41,7 +43,7 @@ class Game extends AppChildProcess {
 		hud = new ui.Hud();
 		camera = new Camera();
 
-		startLevel(Assets.worldData.all_worlds.SampleWorld.all_levels.FirstLevel);
+		startLevel(Assets.worldData.all_worlds.Default.all_levels.Level_0);
 	}
 
 
@@ -64,8 +66,10 @@ class Game extends AppChildProcess {
 			e.destroy();
 		garbageCollectEntities();
 
+		// this is the overworld
 		level = new Level(l);
 		// <---- Here: instanciate your level entities
+		var player = new SamplePlayer();
 
 		camera.centerOnTarget();
 		hud.onLevelStart();
@@ -87,7 +91,7 @@ class Game extends AppChildProcess {
 	function onLdtkReload() {
 		hud.notify("LDtk reloaded");
 		if( level!=null )
-			startLevel( Assets.worldData.all_worlds.SampleWorld.getLevel(level.data.uid) );
+			startLevel( Assets.worldData.all_worlds.Default.getLevel(level.data.uid) );
 	}
 
 	/** Window/app resize event **/

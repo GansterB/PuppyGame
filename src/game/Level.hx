@@ -64,7 +64,9 @@ class Level extends GameChildProcess {
 		root.removeChildren();
 
 		var tg = new h2d.TileGroup(tilesetSource, root);
-		data.l_Collisions.render(tg);
+		data.l_LevelAuto.render(tg);
+		data.l_RoadAuto.render(tg);
+		data.l_Buildings.render(tg);
 	}
 
 	override function postUpdate() {
