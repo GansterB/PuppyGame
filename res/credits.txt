@@ -1,2 +1,6 @@
 
-wood_tileset.png - https://opengameart.org/content/2d-lost-garden-tileset-transition-to-jetrels-wood-tileset
+Spring Spring:
+- rpg-maker-2003-compatible-furry-characters [https://opengameart.org/content/rpg-maker-2003-compatible-furry-characters]
+
+Jetrel, Daniel Cook, Zabin:
+- wood_tileset.png [https://opengameart.org/content/2d-lost-garden-tileset-transition-to-jetrels-wood-tileset]
