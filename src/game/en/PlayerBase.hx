@@ -76,14 +76,14 @@ class PlayerBase extends Entity {
 	override function onPreStepY() {
 		super.onPreStepY();
 
-		// Land on ground
+		// Land on ground (example)
 		if( yr>1 && level.hasCollision(cx,cy+1) ) {
 			// setSquashY(0.5);
-			vBase.dy = 0;
-			vBump.dy = 0;
+			// vBase.dy = 0;
+			// vBump.dy = 0;
 			yr = 1;
 			// ca.rumble(0.2, 0.06);
-			onPosManuallyChangedY();
+			// onPosManuallyChangedY();
 		}
 
 		// Ceiling collision
@@ -161,8 +161,7 @@ class PlayerBase extends Entity {
 					setDirection(MoveLeft);
 			}
 		}
-		else
-			setWalking(false);
+		else setWalking(false);
 	}
 
 	function setDirection(direction:GameAction) {
