@@ -16,6 +16,8 @@ class Assets {
 	/** LDtk world data **/
 	public static var worldData : World;
 
+	/** Characters **/
+	public static var actors : Array<Array<h2d.Tile>>;
 
 	static var _initDone = false;
 	public static function init() {
@@ -71,8 +73,29 @@ class Assets {
 				}, 0.2);
 			});
 		#end
+
+		// Load entity sprites
+		actors = hxd.Res.sprites.characters.toTile().grid(32);
+		for (col in actors)
+			for (tile in col)
+				tile.setCenterRatio(0.5, 1);
 	}
 
+
+	public static function getCharAnim(
+		parent:h2d.Object, row:Int, colStart:Int,
+		count:Int = 3, speed:Int = 8): h2d.Anim {
+
+		var tiles = [actors[colStart+1][row]];
+
+		for (i in (colStart...colStart+count))
+			tiles.push(actors[i][row]);
+
+		var anim = new h2d.Anim(tiles, speed, parent);
+		anim.pause = true;
+		anim.visible = false;
+		return anim;
+	}
 
 	/**
 		Pass `tmod` value from the game to atlases, to allow them to play animations at the same speed as the Game.

@@ -1,4 +1,4 @@
-import sample.SamplePlayer;
+import en.PlayerBase;
 
 class Game extends AppChildProcess {
 	public static var ME : Game;
@@ -69,7 +69,7 @@ class Game extends AppChildProcess {
 		// this is the overworld
 		level = new Level(l);
 		// <---- Here: instanciate your level entities
-		var player = new SamplePlayer();
+		new PlayerBase();
 
 		camera.centerOnTarget();
 		hud.onLevelStart();

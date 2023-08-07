@@ -1,22 +1,27 @@
-package sample;
+package en;
 import haxe.ds.Vector;
 
 /**
-	SamplePlayer is an Entity with some extra functionalities:
+	PlayerBase is an Entity with some extra functionalities:
 	- user controlled (using gamepad or keyboard)
 	- falls with gravity
 	- has basic level collisions
 	- some squash animations, because it's cheap and they do the job
 **/
 
-class SamplePlayer extends Entity {
+class PlayerBase extends Entity {
+
 	var ca : ControllerAccess<GameAction>;
 	var speed = .025;
 	var walkSpeed = new Vector<Float>(2);
+	var walkDown  : h2d.Anim;
+	var walkUp    : h2d.Anim;
+	var walkLeft  : h2d.Anim;
+	var walkRight : h2d.Anim;
 
 	// This is TRUE if the player is not falling
-	var onGround(get,never) : Bool;
-		inline function get_onGround() return !destroyed && vBase.dy==0 && yr==1 && level.hasCollision(cx,cy+1);
+	// var onGround(get,never) : Bool;
+	// 	inline function get_onGround() return !destroyed && vBase.dy==0 && yr==1 && level.hasCollision(cx,cy+1);
 
 	public function new() {
 		super(5,5);
@@ -26,8 +31,9 @@ class SamplePlayer extends Entity {
 		if( start!=null )
 			setPosCase(start.cx, start.cy);
 
+
 		// Misc inits
-		// vBase.setFricts(0.84, 0.94);
+		vBase.frict = .7;
 
 		// Camera tracks this
 		camera.trackEntity(this, true);
@@ -37,9 +43,12 @@ class SamplePlayer extends Entity {
 		ca = App.ME.controller.createAccess();
 		ca.lockCondition = Game.isGameControllerLocked;
 
-		// Placeholder display
-		var b = new h2d.Bitmap( h2d.Tile.fromColor(Green, iwid, ihei), spr );
-		b.tile.setCenterRatio(0.5,1);
+		// Sprites
+		walkUp    = Assets.getCharAnim(spr, 4, 0);
+		walkRight = Assets.getCharAnim(spr, 5, 0);
+		walkDown  = Assets.getCharAnim(spr, 6, 0);
+		walkLeft  = Assets.getCharAnim(spr, 7, 0);
+		walkDown.visible = true;
 	}
 
 
@@ -54,12 +63,12 @@ class SamplePlayer extends Entity {
 		super.onPreStepX();
 
 		// Right collision
-		if( xr>0.8 && level.hasCollision(cx+1,cy) )
-			xr = 0.8;
+		if( xr > 0.75 && level.hasCollision(cx+1,cy) )
+			xr = 0.75;
 
 		// Left collision
-		if( xr<0.2 && level.hasCollision(cx-1,cy) )
-			xr = 0.2;
+		if( xr < 0.25 && level.hasCollision(cx-1,cy) )
+			xr = 0.25;
 	}
 
 
@@ -85,7 +94,12 @@ class SamplePlayer extends Entity {
 
 	/**
 		Control inputs are checked at the beginning of the frame.
-		VERY IMPORTANT NOTE: because game physics only occur during the `fixedUpdate` (at a constant 30 FPS), no physics increment should ever happen here! What this means is that you can SET a physics value (eg. see the Jump below), but not make any calculation that happens over multiple frames (eg. increment X speed when walking).
+		VERY IMPORTANT NOTE: because game physics only occur during the `fixedUpdate` (at a constant 30 FPS),
+		no physics increment should ever happen here!
+		What this means is that you can SET a physics value
+		(eg. see the Jump below),
+		but not make any calculation that happens over multiple frames
+		(eg. increment X speed when walking).
 	**/
 	override function preUpdate() {
 		super.preUpdate();
@@ -103,6 +117,10 @@ class SamplePlayer extends Entity {
 		// 	fx.dotsExplosionExample(centerX, centerY, 0xffcc00);
 		// 	ca.rumble(0.05, 0.06);
 		// }
+
+		// Ping
+		if (ca.isReleased(Jump))
+			hud.notify('ping');
 
 		// Walk
 		if (!isChargingAction()) {
@@ -122,9 +140,48 @@ class SamplePlayer extends Entity {
 		// 	vBase.dy+=0.05;
 
 		// Apply requested walk movement
-		if (walkSpeed[0] != 0)
-			vBase.dx += walkSpeed[0] * speed;
-		if (walkSpeed[1] != 0)
-			vBase.dy += walkSpeed[1] * speed;
+		if (walkSpeed[0] != 0 || walkSpeed[1] != 0) {
+			// apply physics
+			vBase.addXY(
+				walkSpeed[0] * speed,
+				walkSpeed[1] * speed
+			);
+			// play animation
+			setWalking(true);
+			if (Math.abs(walkSpeed[1]) > Math.abs(walkSpeed[0])) {
+				if (walkSpeed[1] < 0)
+					setDirection(MoveUp);
+				else
+					setDirection(MoveDown);
+			}
+			else {
+				if (walkSpeed[0] > 0)
+					setDirection(MoveRight);
+				else
+					setDirection(MoveLeft);
+			}
+		}
+		else
+			setWalking(false);
+	}
+
+	function setDirection(direction:GameAction) {
+		walkUp.visible = direction == MoveUp;
+		walkRight.visible = direction == MoveRight;
+		walkDown.visible = direction == MoveDown;
+		walkLeft.visible = direction == MoveLeft;
+	}
+
+	function setWalking(isWalking:Bool) {
+		pauseAndReset(walkUp, !isWalking);
+		pauseAndReset(walkRight, !isWalking);
+		pauseAndReset(walkDown, !isWalking);
+		pauseAndReset(walkLeft, !isWalking);
+	}
+
+	function pauseAndReset(anim:h2d.Anim, pause:Bool) {
+		anim.pause = pause;
+		if (pause)
+			anim.currentFrame = 0;
 	}
 }
