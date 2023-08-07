@@ -10,7 +10,7 @@ class Level extends GameChildProcess {
 	public var pxHei(default,null) : Int;
 
 	public var data : World_Level;
-	var tilesetSource : h2d.Tile;
+	public var enBuffer = new h2d.Object();
 
 	public var marks : dn.MarkerMap<LevelMark>;
 	var invalidated = true;
@@ -24,7 +24,6 @@ class Level extends GameChildProcess {
 		cHei = data.l_Collisions.cHei;
 		pxWid = cWid * Const.GRID;
 		pxHei = cHei * Const.GRID;
-		tilesetSource = hxd.Res.levels.sampleWorldTiles.toAseprite().toTile();
 
 		marks = new dn.MarkerMap(cWid, cHei);
 		for(cy in 0...cHei)
@@ -37,7 +36,6 @@ class Level extends GameChildProcess {
 	override function onDispose() {
 		super.onDispose();
 		data = null;
-		tilesetSource = null;
 		marks.dispose();
 		marks = null;
 	}
@@ -63,10 +61,17 @@ class Level extends GameChildProcess {
 		// Placeholder level render
 		root.removeChildren();
 
-		var tg = new h2d.TileGroup(tilesetSource, root);
-		data.l_LevelAuto.render(tg);
-		data.l_RoadAuto.render(tg);
-		data.l_Buildings.render(tg);
+		var ground = new h2d.TileGroup();
+		data.l_LevelAuto.render(ground);
+		data.l_RoadAuto.render(ground);
+		data.l_Buildings.render(ground);
+
+		var buildingFx = new h2d.TileGroup();
+		data.l_BuildingEffects.render(buildingFx);
+
+		root.addChildAt(ground, Const.DP_BG);
+		root.addChildAt(enBuffer, Const.DP_MAIN);
+		root.addChildAt(buildingFx, Const.DP_FRONT);
 	}
 
 	override function postUpdate() {

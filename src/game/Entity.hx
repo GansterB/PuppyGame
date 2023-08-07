@@ -210,7 +210,7 @@ class Entity {
 		vBump = registerNewVelocity(0.93);
 
         spr = new HSprite(Assets.tiles);
-		Game.ME.scroller.add(spr, Const.DP_MAIN);
+		Game.ME.level.enBuffer.addChildAt(spr, Const.DP_MAIN);
 		spr.colorAdd = new h3d.Vector();
 		baseColor = new h3d.Vector();
 		blinkColor = new h3d.Vector();
