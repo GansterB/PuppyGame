@@ -175,7 +175,7 @@ class App extends dn.Process {
 		// Engine settings
 		engine.backgroundColor = 0xff<<24 | 0x111133;
         #if( hl && !debug )
-        engine.fullScreen = true;
+        // engine.fullScreen = true;
         #end
 
 		#if( hl && !debug)
